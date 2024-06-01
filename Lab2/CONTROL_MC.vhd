@@ -188,7 +188,7 @@ process
 					-- beq
 					when "010000" =>
 						PC_sel <= '0';
-						PC_LdEn <= '1';
+						PC_LdEn <= '0';
 						RF_WrEn <= '0';
 						RF_WrData_sel <= '0';
 						RF_B_sel <= '1';
@@ -200,7 +200,7 @@ process
 					--bne
 					when "010001" =>
 						PC_sel <= '0';
-						PC_LdEn <= '1';
+						PC_LdEn <= '0';
 						RF_WrEn <= '0';
 						RF_WrData_sel <= '0';
 						RF_B_sel <= '1';
@@ -353,38 +353,42 @@ process
 						state <= initial_state;
 					-- beq
 					when "010000" =>
-						PC_LdEn <= '0';
+						PC_LdEn <= '1';
 						RF_WrEn <= '0';
 						RF_WrData_sel <= '0';
 						RF_B_sel <= '0';
 						CloudControl <= "11";
-						ALU_func <= "0000";
+						ALU_func <= "0001";
 						ALU_Bin_sel <= '0';
 						MEM_WrEn  <= '0';
 						ByteOp <= '0';
 						if ALU_zero = '1' then
 							PC_sel <= '1';
+							state <= initial_state;
 						else
 							PC_sel <= '0';
+							state <= if_state;
 						end if;
-						state <= if_state;
+						
 					--bne
 					when "010001" =>
-						PC_LdEn <= '0';
+						PC_LdEn <= '1';
 						RF_WrEn <= '0';
 						RF_WrData_sel <= '0';
 						RF_B_sel <= '0';
 						CloudControl <= "11";
-						ALU_func <= "0000";
+						ALU_func <= "0001";
 						ALU_Bin_sel <= '0';
 						MEM_WrEn  <= '0';
 						ByteOp <= '0';
 						if ALU_zero = '0' then
 							PC_sel <= '1';
+							state <= initial_state;
 						else
 							PC_sel <= '0';
+							state <= if_state;
 						end if;
-						state <= if_state;
+						
 					-- lb
 					when "000011" =>
 						PC_sel <= '0';
@@ -632,4 +636,3 @@ process
 	end if;
 end process;
 end Behavioral;
-
