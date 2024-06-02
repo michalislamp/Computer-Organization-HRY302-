@@ -56,7 +56,7 @@ end CONTROL_MC;
 
 architecture Behavioral of CONTROL_MC is
 
-type state_type is (if_state, dec_state, exec_state, mem_rd_state, wr_proc_state, initial_state);
+type state_type is (if_state, dec_state, exec_state, mem_rd_state, wr_proc_state, initial_state_bne, initial_state_beq);
 
 signal OpCode, Func : STD_LOGIC_VECTOR (5 downto 0);
 signal state : state_type;
@@ -68,8 +68,8 @@ process
 			state <= if_state;
 	else
 		case state is
-			when initial_state =>
-				PC_sel <= '0';
+			when initial_state_bne =>
+				--PC_sel <= '0';
 				PC_LdEn <= '0';
 				RF_WrEn <= '0';
 				RF_WrData_sel <= '0';
@@ -80,7 +80,38 @@ process
 				MEM_WrEn  <= '0';
 				ByteOp <= '0';
 				MEM_Reg_WrEn <= '0';
+				
+				if ALU_zero = '0' then
+					PC_sel <= '1';
+					--state <= initial_state;
+				else
+					PC_sel <= '0';
+					--state <= if_state;
+				end if;
 				state <= if_state;
+				
+			when initial_state_beq =>
+				--PC_sel <= '0';
+				PC_LdEn <= '0';
+				RF_WrEn <= '0';
+				RF_WrData_sel <= '0';
+				RF_B_sel <= '0';
+				CloudControl <= "00";
+				ALU_func <= "1111";
+				ALU_Bin_sel <= '0';
+				MEM_WrEn  <= '0';
+				ByteOp <= '0';
+				MEM_Reg_WrEn <= '0';
+				
+				if ALU_zero = '1' then
+					PC_sel <= '1';
+					--state <= initial_state;
+				else
+					PC_sel <= '0';
+					--state <= if_state;
+				end if;
+				state <= if_state;
+				
 			when if_state =>
 				PC_sel <= '0';
 				PC_LdEn <= '0';
@@ -350,7 +381,7 @@ process
 						ALU_Bin_sel <= '1';
 						MEM_WrEn  <= '0';
 						ByteOp <= '0';
-						state <= initial_state;
+						state <= initial_state_bne;
 					-- beq
 					when "010000" =>
 						PC_LdEn <= '1';
@@ -362,13 +393,8 @@ process
 						ALU_Bin_sel <= '0';
 						MEM_WrEn  <= '0';
 						ByteOp <= '0';
-						if ALU_zero = '1' then
-							PC_sel <= '1';
-							state <= initial_state;
-						else
-							PC_sel <= '0';
-							state <= if_state;
-						end if;
+						state <= initial_state_beq;
+						
 						
 					--bne
 					when "010001" =>
@@ -381,13 +407,8 @@ process
 						ALU_Bin_sel <= '0';
 						MEM_WrEn  <= '0';
 						ByteOp <= '0';
-						if ALU_zero = '0' then
-							PC_sel <= '1';
-							state <= initial_state;
-						else
-							PC_sel <= '0';
-							state <= if_state;
-						end if;
+						
+						state <= initial_state_bne;
 						
 					-- lb
 					when "000011" =>
