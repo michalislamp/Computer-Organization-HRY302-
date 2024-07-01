@@ -1,4 +1,5 @@
-Computer Organization course projects for academic year 2023-2024 with @cdim31.
+##Computer Organization course projects for academic year 2023-2024 
+###with @cdim31.
 
 Lab 0: Everything Works    40/50
 
